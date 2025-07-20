@@ -11,7 +11,7 @@ UI Slicing project based on Figma design.
 
 Berikut adalah hasil slicing dari desain Figma ke Flutter:
 
-<img src="./home_ui.png" alt="Home UI" style="width: 500px; max-width: 100%;">
+![Home UI](home_ui.png)
 
 [Open in Figma](https://www.figma.com/community/file/1169928945460966636/hoteliq-booking-hotel-app-design)
 
