@@ -1,4 +1,4 @@
-![simulator_screenshot_AEDA9081-D78C-4163-8180-82EC8E629421](https://github.com/user-attachments/assets/674b1905-c4f2-42db-a9f9-ff4f8ff43392)# Hoteliq UI (Flutter)
+# Hoteliq UI (Flutter)
 
 UI Slicing project based on Figma design.
 
@@ -11,9 +11,7 @@ UI Slicing project based on Figma design.
 
 Berikut adalah hasil slicing dari desain Figma ke Flutter:
 
-![Home UI](./home_ui.png)
-
-
+<img src="./home_ui.png" alt="Home UI" width="400"/>
 
 [Open in Figma](https://www.figma.com/community/file/1169928945460966636/hoteliq-booking-hotel-app-design)
 
