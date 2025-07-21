@@ -5,6 +5,7 @@ import 'package:flutter_ui_hotel_booking/widgets/custom_icon_button.dart';
 import 'package:flutter_ui_hotel_booking/widgets/favorite_icon_button.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
+import 'package:readmore/readmore.dart';
 
 class DetailPage extends StatefulWidget {
   final Hotel hotel;
@@ -18,45 +19,54 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(68), // tinggi AppBar custom
+        child: SafeArea(child: _buildAppBar()),
+      ),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 24),
           children: [
-            Gap(24),
-            _buildAppBar(),
+            // Gap(24),
+            // _buildAppBar(),
             Gap(24),
             _buildImage(widget.hotel),
             Gap(16),
             _buildFacilities(),
             Gap(24),
             _buildMainInfo(),
+            Gap(10),
             _buildDescription(),
-            // _buildPreview(),
-            // _buildBooking(),
+            Gap(22),
+            _buildPreview(),
           ],
         ),
       ),
+      bottomNavigationBar: _buildBooking(),
     );
   }
 
   Widget _buildAppBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        CustomIconButton(
-          assets: 'assets/icons/arrow-left.png',
-          onPressed: () => Navigator.pop(context),
-        ),
-        Text(
-          'Detail',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-            color: AppColors.blackNormal,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          CustomIconButton(
+            assets: 'assets/icons/arrow-left.png',
+            onPressed: () => Navigator.pop(context),
           ),
-        ),
-        CustomIconButton(assets: 'assets/icons/more.png'),
-      ],
+          Text(
+            'Detail',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: AppColors.blackNormal,
+            ),
+          ),
+          CustomIconButton(assets: 'assets/icons/more.png'),
+        ],
+      ),
     );
   }
 
@@ -207,8 +217,100 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-Widget _buildDescription(){
-  
-}
+  Widget _buildDescription() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Description',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: AppColors.blackNormal,
+          ),
+        ),
+        Gap(8),
+        ReadMoreText(
+          widget.hotel.description,
+          trimMode: TrimMode.Length,
+          trimLength: 139,
+          delimiter: '',
+          trimCollapsedText: ' Read More...',
+          trimExpandedText: ' Read Less...',
+          style: TextStyle(
+            fontWeight: FontWeight.w300,
+            fontSize: 12,
+            color: AppColors.blackLighter,
+          ),
+          moreStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            color: AppColors.primaryNormal,
+          ),
+          lessStyle: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 12,
+            color: AppColors.primaryNormal,
+          ),
+        ),
+      ],
+    );
+  }
 
+  Widget _buildPreview() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Preview',
+          style: TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: AppColors.blackNormal,
+          ),
+        ),
+        Gap(8),
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          padding: EdgeInsets.all(0),
+          childAspectRatio: 1.3,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          children: widget.hotel.preview.map((e) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.asset(e, fit: BoxFit.cover),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBooking() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 36),
+      child: SizedBox(
+        height: 56,
+        child: FilledButton(
+          onPressed: () {},
+          style: ButtonStyle(
+            shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          child: Text(
+            'Booking Now',
+            style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
