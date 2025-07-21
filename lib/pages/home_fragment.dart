@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ui_hotel_booking/common/app_colors.dart';
 import 'package:flutter_ui_hotel_booking/common/app_constants.dart';
 import 'package:flutter_ui_hotel_booking/models/hotel.dart';
+import 'package:flutter_ui_hotel_booking/widgets/custom_icon_button.dart';
+import 'package:flutter_ui_hotel_booking/widgets/favorite_icon_button.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 
@@ -12,21 +14,43 @@ class HomeFragment extends StatefulWidget {
   State<HomeFragment> createState() => _HomeFragmentState();
 }
 
-class _HomeFragmentState extends State<HomeFragment> {
+class _HomeFragmentState extends State<HomeFragment>
+    with TickerProviderStateMixin {
   int _indexCategory = 0;
+  int? _tappedIndex;
+
+  late final AnimationController _controller;
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 600),
+    )..forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        _buildHeader(),
-        Gap(32),
-        _buildCategories(),
-        Gap(24),
-        _buildNearLocation(),
-        Gap(24),
-        _buildPopularHotels(),
-      ],
+    return SafeArea(
+      child: ListView(
+        padding: const EdgeInsets.all(0),
+        children: [
+          Gap(24),
+          _buildHeader(),
+          Gap(32),
+          _buildCategories(),
+          Gap(24),
+          _buildNearLocation(),
+          Gap(24),
+          _buildPopularHotels(),
+        ],
+      ),
     );
   }
 
@@ -69,27 +93,9 @@ class _HomeFragmentState extends State<HomeFragment> {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            style: ButtonStyle(
-              shape: WidgetStatePropertyAll(
-                RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Color(0xffECECEC)),
-                ),
-              ),
-              fixedSize: WidgetStatePropertyAll(Size(40, 40)),
-            ),
-            icon: Badge(
-              alignment: Alignment(0.9, -0.9),
-              smallSize: 10,
-              backgroundColor: AppColors.accentRed,
-              child: ImageIcon(
-                AssetImage('assets/icons/notification-bing.png'),
-              ),
-            ),
-            iconSize: 24,
-            color: Color(0xff000000),
+          CustomIconButton(
+            assets: 'assets/icons/notification-bing.png',
+            showBadge: true,
           ),
         ],
       ),
@@ -116,7 +122,9 @@ class _HomeFragmentState extends State<HomeFragment> {
                 _indexCategory = index;
                 setState(() {});
               },
-              child: Container(
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 200),
+                curve: Curves.easeOut,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: isActive
@@ -135,8 +143,8 @@ class _HomeFragmentState extends State<HomeFragment> {
                         size: 24,
                         color: isActive ? Colors.white : AppColors.blackLighter,
                       ),
-                      Text(
-                        item.$2,
+                      AnimatedDefaultTextStyle(
+                        duration: Duration(milliseconds: 200),
                         style: TextStyle(
                           fontWeight: isActive
                               ? FontWeight.w600
@@ -146,6 +154,7 @@ class _HomeFragmentState extends State<HomeFragment> {
                               ? Colors.white
                               : AppColors.blackLighter,
                         ),
+                        child: Text(item.$2),
                       ),
                     ],
                   ),
@@ -204,152 +213,131 @@ class _HomeFragmentState extends State<HomeFragment> {
                   onTap: () {
                     Navigator.pushNamed(context, '/detail', arguments: item);
                   },
-                  child: Container(
-                    width: 257,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: Offset(0, 2),
-                          blurRadius: 45,
-                          color: Color(0xff1B1B4D).withValues(alpha: 0.04),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(16),
-                                  topRight: Radius.circular(16),
-                                ),
-                                child: Image.asset(
-                                  item.image,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              Positioned(
-                                top: 12,
-                                right: 16,
-                                child: IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      item.isFavorite = !item.isFavorite;
-                                    });
-                                  },
-                                  style: ButtonStyle(
-                                    backgroundColor: WidgetStatePropertyAll(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                  icon: item.isFavorite
-                                      ? Image.asset(
-                                          'assets/icons/heart-bold.png',
-                                          width: 24,
-                                        )
-                                      : ImageIcon(
-                                          AssetImage(
-                                            'assets/icons/heart-bold.png',
-                                          ),
-                                          color: AppColors.blackLighter,
-                                          size: 20,
-                                        ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        Padding(
-                          padding: EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      item.name,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 14,
-                                        color: AppColors.blackNormal,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  Row(
-                                    spacing: 8,
-                                    children: [
-                                      ImageIcon(
-                                        AssetImage(
-                                          'assets/icons/star-bold.png',
-                                        ),
-                                        size: 20,
-                                        color: AppColors.accentYellow,
-                                      ),
-                                      Text(
-                                        '${item.rate}',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 12,
-                                          color: AppColors.blackNormal,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              Gap(4),
-                              Text(
-                                item.location,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  color: AppColors.blackLighter,
-                                ),
-                              ),
-                              Gap(16),
-                              Row(
-                                children: [
-                                  Text(
-                                    NumberFormat.currency(
-                                      locale: 'en_US',
-                                      symbol: '\$',
-                                    ).format(item.price),
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 14,
-                                      color: AppColors.primaryNormal,
-                                    ),
-                                  ),
-                                  Text(
-                                    ' /night',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 12,
-                                      color: AppColors.blackLighter,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  child: _buildNearLocationItem(item),
                 ),
               );
             },
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildNearLocationItem(Hotel item) {
+    return Container(
+      width: 257,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            offset: Offset(0, 2),
+            blurRadius: 45,
+            color: Color(0xff1B1B4D).withValues(alpha: 0.04),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
+                  ),
+                  child: Image.asset(item.image, fit: BoxFit.cover),
+                ),
+                FavoriteIconButton(
+                  item: item,
+                  onPressed: () {
+                    setState(() {
+                      item.isFavorite = !item.isFavorite;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: AppColors.blackNormal,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        ImageIcon(
+                          AssetImage('assets/icons/star-bold.png'),
+                          size: 20,
+                          color: AppColors.accentYellow,
+                        ),
+                        Text(
+                          '${item.rate}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                            color: AppColors.blackNormal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Gap(4),
+                Text(
+                  item.location,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    color: AppColors.blackLighter,
+                  ),
+                ),
+                Gap(16),
+                Row(
+                  children: [
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'en_US',
+                        symbol: '\$',
+                      ).format(item.price),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: AppColors.primaryNormal,
+                      ),
+                    ),
+                    Text(
+                      ' /night',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: AppColors.blackLighter,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -363,7 +351,7 @@ class _HomeFragmentState extends State<HomeFragment> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Popilar Hotels',
+                'Popular Hotels',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
@@ -388,111 +376,150 @@ class _HomeFragmentState extends State<HomeFragment> {
             padding: EdgeInsets.all(0),
             itemBuilder: (context, index) {
               final item = popularHotel[index];
-              return Container(
-                margin: EdgeInsets.only(bottom: 16),
-                height: 108,
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      offset: Offset(0, 2),
-                      blurRadius: 45,
-                      color: Color(0xff1B1B4D).withValues(alpha: 0.04),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.asset(
-                        item.image,
-                        width: 84,
-                        height: 84,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Gap(16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  item.name,
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
-                                    color: AppColors.blackNormal,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                              Row(
-                                spacing: 8,
-                                children: [
-                                  ImageIcon(
-                                    AssetImage('assets/icons/star-bold.png'),
-                                    size: 20,
-                                    color: AppColors.accentYellow,
-                                  ),
-                                  Text(
-                                    '${item.rate}',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: AppColors.blackNormal,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          Gap(4),
-                          Text(
-                            item.location,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w400,
-                              fontSize: 12,
-                              color: AppColors.blackLighter,
-                            ),
-                          ),
-                          Gap(16),
-                          Row(
-                            children: [
-                              Text(
-                                NumberFormat.currency(
-                                  locale: 'en_US',
-                                  symbol: '\$',
-                                ).format(item.price),
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: AppColors.primaryNormal,
-                                ),
-                              ),
-                              Text(
-                                ' /night',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: 12,
-                                  color: AppColors.blackLighter,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+              final isTapped = _tappedIndex == index;
+
+              return GestureDetector(
+                onTapDown: (_) => setState(() => _tappedIndex = index),
+                onTapUp: (_) => setState(() => _tappedIndex = null),
+                onTapCancel: () => setState(() => _tappedIndex = null),
+                onTap: () {
+                  Navigator.pushNamed(context, '/detail', arguments: item);
+                },
+                child: AnimatedScale(
+                  scale: isTapped ? 0.97 : 1.0,
+                  duration: Duration(milliseconds: 100),
+                  child: _buildAnimatedHotelItem(item, index),
                 ),
               );
             },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAnimatedHotelItem(Hotel item, int index) {
+    final animation =
+        Tween<Offset>(
+          begin: Offset(0, 0.1 * (index + 1)),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: Interval(0.1 * index, 1.0, curve: Curves.easeOut),
+          ),
+        );
+
+    return SlideTransition(
+      position: animation,
+      child: FadeTransition(
+        opacity: _controller,
+        child: _buildPopularHotelItem(item),
+      ),
+    );
+  }
+
+  Widget _buildPopularHotelItem(Hotel item) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      height: 108,
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            offset: Offset(0, 2),
+            blurRadius: 45,
+            color: Color(0xff1B1B4D).withValues(alpha: 0.04),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              item.image,
+              width: 84,
+              height: 84,
+              fit: BoxFit.cover,
+            ),
+          ),
+          Gap(16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.name,
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                          color: AppColors.blackNormal,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    Row(
+                      spacing: 8,
+                      children: [
+                        ImageIcon(
+                          AssetImage('assets/icons/star-bold.png'),
+                          size: 20,
+                          color: AppColors.accentYellow,
+                        ),
+                        Text(
+                          '${item.rate}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                            color: AppColors.blackNormal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Gap(4),
+                Text(
+                  item.location,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: 12,
+                    color: AppColors.blackLighter,
+                  ),
+                ),
+                Gap(16),
+                Row(
+                  children: [
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'en_US',
+                        symbol: '\$',
+                      ).format(item.price),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: AppColors.primaryNormal,
+                      ),
+                    ),
+                    Text(
+                      ' /night',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 12,
+                        color: AppColors.blackLighter,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
