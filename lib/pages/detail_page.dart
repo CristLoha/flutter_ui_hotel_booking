@@ -20,15 +20,13 @@ class _DetailPageState extends State<DetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(68), // tinggi AppBar custom
+        preferredSize: Size.fromHeight(68), 
         child: SafeArea(child: _buildAppBar()),
       ),
       body: SafeArea(
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 24),
           children: [
-            // Gap(24),
-            // _buildAppBar(),
             Gap(24),
             _buildImage(widget.hotel),
             Gap(16),
