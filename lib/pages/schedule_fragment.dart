@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_hotel_booking/common/app_colors.dart';
-import 'package:flutter_ui_hotel_booking/models/hotel.dart';
 import 'package:flutter_ui_hotel_booking/models/schedule.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
@@ -182,7 +181,7 @@ class _ScheduleFragmentState extends State<ScheduleFragment> {
 
               return GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, '/detail', arguments: item);
+                  // Navigator.pushNamed(context, '/detail', arguments: item);
                 },
                 child: _buildMyScheduleItem(item),
               );
